@@ -76,7 +76,7 @@ public class CountMin {
         double sum = 0;
         for(int i = 0; i < flows.length; i++){
 
-            sum+= getErrorForFlow(i);
+            sum+= Math.abs(getErrorForFlow(i));
         }
         return sum/flows.length;
     }
@@ -89,7 +89,7 @@ public class CountMin {
         }
         //print error
 
-        System.out.println("Average" + calAndPrintAverage());
+        System.out.println("Average " + calAndPrintAverage());
         List<int[]> topList = new ArrayList<>();
         while(!q.isEmpty()){
             topList.add(q.poll());
@@ -119,7 +119,7 @@ public class CountMin {
             int counterSize = 3000;
             //input Reader
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("Please enter name of file after placing it into the project directory");
+            System.out.println("Please enter name of file after placing it into the project directory or simply use the demo file in the project by entering project3input.txt");
             path = reader.readLine();
             System.out.println("Please enter the number of counters");
             nCounters = Integer.parseInt(reader.readLine());

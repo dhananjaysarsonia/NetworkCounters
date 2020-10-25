@@ -129,15 +129,6 @@ public class CounterSketch {
 
         return converted < 1;
     }
-
-
-
-
-
-
-
-
-
     private int getMSB(int v){
         String string = Long.toBinaryString( Integer.toUnsignedLong(v) | 0x100000000L ).substring(1);
         int MSB = 1; //as it is signed
@@ -150,7 +141,7 @@ public class CounterSketch {
             int counterSize = 3000;
             //input Reader
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("Please enter name of file after placing it into the project directory");
+            System.out.println("Please enter name of file after placing it into the project directory or simply use the demo file in the project by entering project3input.txt");
             path = reader.readLine();
             System.out.println("Please enter the number of counters");
             nCounters = Integer.parseInt(reader.readLine());

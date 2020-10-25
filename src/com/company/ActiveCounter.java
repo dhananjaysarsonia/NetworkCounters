@@ -49,8 +49,10 @@ public class ActiveCounter {
 
         int fLeft = Math.abs(Short.MIN_VALUE - left);
         int fRight = Math.abs(Short.MIN_VALUE - right);
+        int result  = (int)(fLeft*Math.pow(2, fRight));
         System.out.print("Final result: ");
-        System.out.println((int)(fLeft*Math.pow(2, fRight)));
+        System.out.println(result);
+        System.out.println("Difference: " + Math.abs(number - result));
 
     }
 
