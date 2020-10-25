@@ -1,10 +1,12 @@
 package com.company;
 
-import java.awt.image.ImageProducer;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
-public class CountMin {
+public class CounterSketch {
 
     private int nHash;
     private int nCounters;
@@ -17,18 +19,14 @@ public class CountMin {
     private static final int COUNT = 1;
     private static final int INDEX = 0;
     PriorityQueue<int[]> q;
-
-
-    //num flows, number of counters, counter width
-    public CountMin( String[] flows, int nCounters, int counterSize){
+    public CounterSketch(String[] flows, int nCounters, int counterSize){
         this.nCounters = nCounters;
         this.counterSize = counterSize;
         this.nHash = nCounters;
         this.flows = flows;
         initialize();
+
     }
-
-
     private void initialize() {
         random = new Random();
         q = new PriorityQueue<>((a,b) -> {
@@ -45,16 +43,30 @@ public class CountMin {
     private void insert(String kv){
         String[] map = getFlowKV(kv);
         for(int i = 0; i < nHash; i++){
-            counters[i][getIndex(map[IP], i)]+= Integer.parseInt(map[COUNT]);
+            if(isNegative(map[IP], i)){
+                counters[i][getIndex(map[IP], i)]-= Integer.parseInt(map[COUNT]);
+            }else{
+                counters[i][getIndex(map[IP], i)]+= Integer.parseInt(map[COUNT]);
+            }
+
         }
     }
 
     private int lookUp(String ipString){
-        int min = Integer.MAX_VALUE;
+        List<Integer> list = new ArrayList<>();
         for(int i = 0; i < nHash; i++){
-            min = Math.min(min, counters[i][getIndex(ipString, i)]);
+            list.add(Math.abs(counters[i][getIndex(ipString, i)]));
         }
-        return min;
+        Collections.sort(list);
+
+        if(list.size()%2 == 0){
+            int mid = list.size()/2;
+            return (list.get(mid) + list.get(mid + 1))/2;
+        }else{
+            int mid = list.size();
+            return list.get(mid / 2);
+        }
+
     }
 
     private int getErrorForFlow(int index){
@@ -70,7 +82,7 @@ public class CountMin {
             q.poll();
         }
 
-        return actual - found;
+        return Math.abs(actual - found);
     }
     private double calAndPrintAverage(){
         double sum = 0;
@@ -89,7 +101,7 @@ public class CountMin {
         }
         //print error
 
-        System.out.println("Average" + calAndPrintAverage());
+        System.out.println("Average " + calAndPrintAverage());
         List<int[]> topList = new ArrayList<>();
         while(!q.isEmpty()){
             topList.add(q.poll());
@@ -111,7 +123,26 @@ public class CountMin {
         int converted = Math.abs(element.hashCode());
         return (hashes[index] ^ converted)% counterSize;
     }
+    private boolean isNegative(String element, int index){
+        int converted = element.hashCode();
+        //int msb = getMSB(converted);
 
+        return converted < 1;
+    }
+
+
+
+
+
+
+
+
+
+    private int getMSB(int v){
+        String string = Long.toBinaryString( Integer.toUnsignedLong(v) | 0x100000000L ).substring(1);
+        int MSB = 1; //as it is signed
+        return string.charAt(MSB) - '0';
+    }
     public static void main(String[] args) {
         try {
             String path = "project3input.txt";
@@ -147,14 +178,8 @@ public class CountMin {
                 }
             }
 
-            CountMin countMin = new CountMin(input,nCounters,counterSize);
-            countMin.simulate();
-
-
-
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            CounterSketch counterSketch = new CounterSketch(input,nCounters, counterSize);
+            counterSketch.simulate();
         } catch (IOException e) {
             e.printStackTrace();
         }

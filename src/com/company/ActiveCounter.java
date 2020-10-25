@@ -1,5 +1,8 @@
 package com.company;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Random;
 
 public class ActiveCounter {
@@ -15,65 +18,53 @@ public class ActiveCounter {
 
     private void initialize() {
         random = new Random();
-        reciProbab = (int)Math.pow(2,16);
+        reciProbab = (int)Math.pow(2, 16);
     }
-    private boolean toss(){
-        return random.nextInt(reciProbab) == 0;
+    private boolean toss(int prob){
+        int v = (int)Math.pow(2, prob);
+        if(prob == 0){
+            return true;
+        }
+        return random.nextInt(v) == 0;
     }
 
     public void simulate(){
         int counter = number;
-        int probOn = 0;
-        int shortCounter = 0;
+        left = Short.MIN_VALUE;
+        right = Short.MIN_VALUE;
         while(counter > 0){
-
-            if(probOn < 2){
-                if(left == Short.MAX_VALUE){
-                    probOn++;
-                }
-                if(probOn == 2){
-                    left = 0;
-                    right++;
-                }else{
-                    left++;
-                }
-            }else{
-                if(toss()){
-                    if(shortCounter < 2){
-                        if(left == Short.MAX_VALUE){
-                            left = 0;
-                            shortCounter++;
-                        }
-                        if(shortCounter == 2){
-
-                            right++;
-                        }else{
-                            left++;
-                        }
+                if(toss(Math.abs(Short.MIN_VALUE - right))){
+                    if(left == Short.MAX_VALUE){
+                        left = 0;
+                        right++;
                     }else{
-                        shortCounter = 0;
                         left++;
-
                     }
-                }
+
             }
 
-
-
             counter--;
+
         }
 
-
-        //int fValue = left * (int)Math.pow(2, right);
-        System.out.println(left * (int)Math.pow(2, right));
-
+        int fLeft = Math.abs(Short.MIN_VALUE - left);
+        int fRight = Math.abs(Short.MIN_VALUE - right);
+        System.out.print("Final result: ");
+        System.out.println((int)(fLeft*Math.pow(2, fRight)));
 
     }
 
 
     public static void main(String[] args) {
-        ActiveCounter activeCounter = new ActiveCounter(1000000);
-        activeCounter.simulate();
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            System.out.println("Please enter the value to count");
+            int count = Integer.parseInt(reader.readLine());
+            ActiveCounter activeCounter = new ActiveCounter(count);
+            activeCounter.simulate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
